@@ -1,2 +1,44 @@
 test.ipynb
 *.png
+.venv
+dist
+tmap_api/__pycache__
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 환경변수 및 설정 파일
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# IDE 및 에디터 파일
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 운영체제 파일
+.DS_Store
+Thumbs.db
