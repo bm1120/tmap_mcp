@@ -228,6 +228,109 @@ def realtime_place_congestion(poi_id: str, lat=None, lng=None):
         lng = float(lng)
     return tmap_client.realtime_place_congestion(poi_id, lat, lng)
 
+@tmap_server.wrap_function(name="public_transit_route")
+def public_transit_route(start_x: str, start_y: str, end_x: str, end_y: str,
+                        lang: int = 0, format: str = "json", count: int = 10,
+                        search_dttm: str = None):
+    """
+    Search for public transit routes
+    
+    Args:
+        start_x: Starting point X coordinate (longitude) - WGS84
+        start_y: Starting point Y coordinate (latitude) - WGS84
+        end_x: Destination X coordinate (longitude) - WGS84
+        end_y: Destination Y coordinate (latitude) - WGS84
+        lang: Language selection (0: Korean, 1: English)
+        format: Output format (json, xml)
+        count: Maximum number of results (1~10)
+        search_dttm: Time machine search date (yyyymmddhhmi)
+    
+    Returns:
+        Public transit route information
+    """
+    return tmap_client.public_transit_route(
+        start_x, start_y, end_x, end_y,
+        lang, format, count, search_dttm
+    )
+
+@tmap_server.wrap_function(name="public_transit_route_summary")
+def public_transit_route_summary(start_x: str, start_y: str, end_x: str, end_y: str,
+                               format: str = "json", count: int = 10,
+                               search_dttm: str = None):
+    """
+    Get summary of public transit route information
+    
+    Args:
+        start_x: Starting point X coordinate (longitude) - WGS84
+        start_y: Starting point Y coordinate (latitude) - WGS84
+        end_x: Destination X coordinate (longitude) - WGS84
+        end_y: Destination Y coordinate (latitude) - WGS84
+        format: Output format (json, xml)
+        count: Maximum number of results (1~10)
+        search_dttm: Time machine search date (yyyymmddhhmi)
+    
+    Returns:
+        Summary of public transit route information including total time, distance, and transfers
+    """
+    return tmap_client.public_transit_route_summary(
+        start_x, start_y, end_x, end_y,
+        format, count, search_dttm
+    )
+
+@tmap_server.wrap_function(name="get_subway_congestion")
+def get_subway_congestion(route_nm: str, station_nm: str, dow: str = None, hh: str = None):
+    """
+    Get train congestion information for a subway station
+    
+    Args:
+        route_nm: Subway line name (e.g., "Line 1")
+        station_nm: Station name (e.g., "Seoul Station")
+        dow: Day of week (MON, TUE, WED, THU, FRI, SAT, SUN)
+             Returns current day's data if not specified
+        hh: Hour (05~23)
+             Returns current hour's data if not specified
+    
+    Returns:
+        Train congestion information at 10-minute intervals
+    """
+    return tmap_client.get_subway_congestion(route_nm, station_nm, dow, hh)
+
+@tmap_server.wrap_function(name="get_subway_car_congestion")
+def get_subway_car_congestion(route_nm: str, station_nm: str, dow: str = None, hh: str = None):
+    """
+    Get car-specific congestion information for a subway station
+    
+    Args:
+        route_nm: Subway line name (e.g., "Line 1")
+        station_nm: Station name (e.g., "Seoul Station")
+        dow: Day of week (MON, TUE, WED, THU, FRI, SAT, SUN)
+             Returns current day's data if not specified
+        hh: Hour (05~23)
+             Returns current hour's data if not specified
+    
+    Returns:
+        Car-by-car congestion information at 10-minute intervals
+    """
+    return tmap_client.get_subway_car_congestion(route_nm, station_nm, dow, hh)
+
+@tmap_server.wrap_function(name="get_subway_car_getoff_rate")
+def get_subway_car_getoff_rate(route_nm: str, station_nm: str, dow: str = None, hh: str = None):
+    """
+    Get car-specific passenger exit rate information for a subway station
+    
+    Args:
+        route_nm: Subway line name (e.g., "Line 1")
+        station_nm: Station name (e.g., "Seoul Station")
+        dow: Day of week (MON, TUE, WED, THU, FRI, SAT, SUN)
+             Returns current day's data if not specified
+        hh: Hour (05~23)
+             Returns current hour's data if not specified
+    
+    Returns:
+        Car-by-car passenger exit rate information at 10-minute intervals
+    """
+    return tmap_client.get_subway_car_getoff_rate(route_nm, station_nm, dow, hh)
+
 # 서버 실행 코드
 if __name__ == "__main__":
     # 서버 시작

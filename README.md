@@ -11,6 +11,8 @@ Tmap REST API 기반 MCP(Model Context Protocol) 서버 구축
 - 자동차 경로 안내
 - 실시간 혼잡도 조회
 - 타임머신 경로 안내
+- 대중교통 경로 안내
+- 대중교통 경로 요약 정보
 - 기타 T맵 API 기능들
 
 ## 설치 및 설정
@@ -70,10 +72,17 @@ run_setup_cursor.bat
 - `pedestrian_route_summary`: 보행자 경로 요약 정보 조회
 - `car_route`: 자동차 경로 안내
 - `time_machine_route`: 타임머신 자동차 경로 안내
+- `public_transit_route`: 대중교통 경로 안내
+- `get_subway_congestion`: 지하철 열차 혼잡도 조회
 
-### 기타
+### 장소 정보
 - `get_poi_detail`: POI 상세 정보 검색
 - `realtime_place_congestion`: 실시간 장소 혼잡도 조회
+
+### 지하철 정보
+- `get_subway_congestion`: 지하철 열차 혼잡도 조회
+- `get_subway_station_congestion`: 지하철 칸별 혼잡도 조회
+- `get_subway_exit_ratio`: 지하철 칸별 하차 비율 조회
 
 ## 파일 구조
 - `mcp_server.py` - MCP 서버 구현

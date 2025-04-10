@@ -23,7 +23,9 @@ class TmapAPI:
             "content-type": "application/json",
             "appKey": self.app_key
         }
-        self.base_url = "https://apis.openapi.sk.com/tmap"
+        self.base_url = "https://apis.openapi.sk.com"
+        self.tmap_url = f"{self.base_url}/tmap"
+        self.transit_url = f"{self.base_url}/transit"
     
     def search_poi_keyword(self, keyword: str, search_type: str = "all", count: int = 20) -> Optional[Dict[str, Any]]:
         """
@@ -37,7 +39,7 @@ class TmapAPI:
         Returns:
             검색 결과 데이터 또는 실패시 None
         """
-        url = f"{self.base_url}/pois"
+        url = f"{self.tmap_url}/pois"
         
         params = {
             "version": "1",
@@ -113,7 +115,7 @@ class TmapAPI:
         Returns:
             좌표 정보 데이터 또는 실패시 None
         """
-        url = f"{self.base_url}/geo/geocoding"
+        url = f"{self.tmap_url}/geo/geocoding"
         
         params = {
             "version": "1",
@@ -149,7 +151,7 @@ class TmapAPI:
         Returns:
             좌표 정보 데이터 또는 실패시 None
         """
-        url = f"{self.base_url}/geo/fullAddrGeo"
+        url = f"{self.tmap_url}/geo/fullAddrGeo"
         
         params = {
             "version": "1",
@@ -184,7 +186,7 @@ class TmapAPI:
         Returns:
             주소 정보 데이터 또는 실패시 None
         """
-        url = f"{self.base_url}/geo/reversegeocoding"
+        url = f"{self.tmap_url}/geo/reversegeocoding"
         
         params = {
             "version": "1",
@@ -225,7 +227,7 @@ class TmapAPI:
         Returns:
             경로 정보 데이터 또는 실패시 None
         """
-        url = f"{self.base_url}/routes/pedestrian"
+        url = f"{self.tmap_url}/routes/pedestrian"
         
         payload = {
             "startX": str(start_x),
@@ -291,7 +293,7 @@ class TmapAPI:
         Returns:
             성공 여부
         """
-        url = f"{self.base_url}/routeStaticMap"
+        url = f"{self.tmap_url}/routeStaticMap"
         
         params = {
             "version": "1",
@@ -333,7 +335,7 @@ class TmapAPI:
         Returns:
             경로 정보 데이터 또는 실패시 None
         """
-        url = f"{self.base_url}/routes"
+        url = f"{self.tmap_url}/routes"
         
         payload = {
             "startX": str(start_x),
@@ -380,7 +382,7 @@ class TmapAPI:
         Returns:
             경로 정보 데이터 또는 실패시 None
         """
-        url = f"{self.base_url}/routes/prediction"
+        url = f"{self.tmap_url}/routes/prediction"
         
         # datetime 객체 처리
         if isinstance(departure_time, datetime):
@@ -445,7 +447,7 @@ class TmapAPI:
         Returns:
             POI 상세 정보 데이터 또는 실패시 None
         """
-        url = f"{self.base_url}/pois/{poi_id}"
+        url = f"{self.tmap_url}/pois/{poi_id}"
         
         params = {
             "version": "1",
@@ -501,7 +503,7 @@ class TmapAPI:
             print(f"POI ID {poi_id}에 대한 상세 정보를 찾을 수 없습니다.")
             return None
             
-        url = f"{self.base_url}/puzzle/pois/{poi_id}"
+        url = f"{self.tmap_url}/puzzle/pois/{poi_id}"
         
         params = {
             "version": "1",
@@ -527,4 +529,449 @@ class TmapAPI:
             print(f"에러 발생: {str(e)}")
             return None
     
+    def public_transit_route(self, 
+                           start_x: str,
+                           start_y: str,
+                           end_x: str,
+                           end_y: str,
+                           lang: int = 0,
+                           format: str = "json",
+                           count: int = 10,
+                           search_dttm: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        """
+        대중교통 경로 탐색 API
+        출발지/목적지에 대한 대중교통 경로탐색 정보와 전체 보행자 이동 경로를 제공
+
+        Args:
+            start_x: 출발지 X좌표(경도) - WGS84
+            start_y: 출발지 Y좌표(위도) - WGS84
+            end_x: 도착지 X좌표(경도) - WGS84
+            end_y: 도착지 Y좌표(위도) - WGS84
+            lang: 언어 선택 (0: 국문(기본값), 1: 영문)
+            format: 출력포맷 (json, xml)
+            count: 최대 응답 결과 개수 (1~10, 기본값 10)
+            search_dttm: 타임머신 기능 검색 날짜(yyyymmddhhmi)
+
+        Returns:
+            대중교통 경로 정보 또는 실패시 None
+            응답 예시:
+            {
+                "metaData": {
+                    "requestParameters": {
+                        "busCount": 3,
+                        "expressbusCount": 0,
+                        "subwayCount": 3,
+                        "airplaneCount": 0,
+                        "locale": "ko",
+                        "endY": "37.564436",
+                        "endX": "127.029281",
+                        "startY": "37.555162",
+                        "startX": "126.936928",
+                        "reqDttm": "20240130163831"
+                    },
+                    "plan": {
+                        "itineraries": [
+                            {
+                                "fare": {
+                                    "regular": {
+                                        "totalFare": 1400,
+                                        "currency": {
+                                            "symbol": "￦",
+                                            "currency": "원",
+                                            "currencyCode": "KRW"
+                                        }
+                                    }
+                                },
+                                "totalTime": 1229,
+                                "legs": [
+                                    {
+                                        "mode": "WALK",
+                                        "sectionTime": 114,
+                                        "distance": 128,
+                                        "start": {
+                                            "name": "출발지",
+                                            "lon": 126.936928,
+                                            "lat": 37.555162
+                                        },
+                                        "end": {
+                                            "name": "신촌",
+                                            "lon": 126.93700277777778,
+                                            "lat": 37.555169444444445
+                                        },
+                                        "steps": [
+                                            {
+                                                "streetName": "",
+                                                "distance": 48,
+                                                "description": "48m 이동",
+                                                "linestring": "126.93693,37.555172..."
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        """
+        url = f"{self.transit_url}/routes"
+        
+        payload = {
+            "startX": start_x,
+            "startY": start_y,
+            "endX": end_x,
+            "endY": end_y,
+            "lang": lang,
+            "format": format,
+            "count": count
+        }
+        
+        # 타임머신 검색 시간이 제공된 경우 추가
+        if search_dttm:
+            payload["searchDttm"] = search_dttm
+            
+        try:
+            response = requests.post(url, headers=self.headers, json=payload)
+            
+            if response.status_code == 200:
+                return response.json()
+            else:
+                print(f"대중교통 경로 검색 실패: {response.status_code}")
+                print(f"응답 내용: {response.text}")
+                return None
+        except Exception as e:
+            print(f"에러 발생: {str(e)}")
+            return None
+    
+    def public_transit_route_summary(self, 
+                                   start_x: str,
+                                   start_y: str,
+                                   end_x: str,
+                                   end_y: str,
+                                   format: str = "json",
+                                   count: int = 10,
+                                   search_dttm: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        """
+        대중교통 경로 요약정보 API
+        출발지/목적지에 대한 대중교통 경로탐색 요약정보를 제공
+
+        Args:
+            start_x: 출발지 X좌표(경도) - WGS84
+            start_y: 출발지 Y좌표(위도) - WGS84
+            end_x: 도착지 X좌표(경도) - WGS84
+            end_y: 도착지 Y좌표(위도) - WGS84
+            format: 출력포맷 (json, xml)
+            count: 최대 응답 결과 개수 (1~10, 기본값 10)
+            search_dttm: 타임머신 기능 검색 날짜(yyyymmddhhmi)
+
+        Returns:
+            대중교통 경로 요약정보 또는 실패시 None
+            응답 예시:
+            {
+                "metaData": {
+                    "requestParameters": {
+                        "endY": "37.564436",
+                        "endX": "127.029281",
+                        "startY": "37.555162",
+                        "startX": "126.936928",
+                        "reqDttm": "20240130144449"
+                    },
+                    "plan": {
+                        "itineraries": [
+                            {
+                                "fare": {
+                                    "regular": {
+                                        "totalFare": 1400,
+                                        "currency": {
+                                            "symbol": "￦",
+                                            "currency": "원",
+                                            "currencyCode": "KRW"
+                                        }
+                                    }
+                                },
+                                "totalTime": 1280,        # 총 소요시간(초)
+                                "totalWalkTime": 202,     # 총 도보 시간(초)
+                                "pathType": 1,            # 경로 유형(1:지하철, 2:버스, 3:버스+지하철)
+                                "transferCount": 0,       # 환승 횟수
+                                "totalDistance": 8467,    # 총 이동거리(m)
+                                "totalWalkDistance": 217  # 총 도보 거리(m)
+                            }
+                        ]
+                    }
+                }
+            }
+        """
+        url = f"{self.transit_url}/routes/sub"
+        
+        payload = {
+            "startX": start_x,
+            "startY": start_y,
+            "endX": end_x,
+            "endY": end_y,
+            "format": format,
+            "count": count
+        }
+        
+        # 타임머신 검색 시간이 제공된 경우 추가
+        if search_dttm:
+            payload["searchDttm"] = search_dttm
+            
+        try:
+            response = requests.post(url, headers=self.headers, json=payload)
+            
+            if response.status_code == 200:
+                return response.json()
+            else:
+                print(f"대중교통 경로 요약정보 검색 실패: {response.status_code}")
+                print(f"응답 내용: {response.text}")
+                return None
+        except Exception as e:
+            print(f"에러 발생: {str(e)}")
+            return None
+    
+    def get_subway_congestion(self, 
+                            route_nm: str,
+                            station_nm: str,
+                            dow: Optional[str] = None,
+                            hh: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        """
+        지하철 진입 역 기준 열차 혼잡도 조회 API
+        지정한 운행 시간대(05:30 ~ 23:50)에 특정 역으로 진입하는 일반/급행 열차에 대한 혼잡도 데이터를 10분 간격으로 제공
+
+        Args:
+            route_nm: 지하철 노선 명칭 (예: "1호선")
+            station_nm: 지하철 역 명칭 (예: "서울역")
+            dow: 검색 기준 요일 (MON, TUE, WED, THU, FRI, SAT, SUN)
+                미입력시 현재 요일 기준 데이터 반환
+            hh: 검색 기준 시간 (05~23)
+                미입력시 현재 시간대 기준 데이터 반환
+
+        Returns:
+            열차 혼잡도 정보 또는 실패시 None
+            응답 예시:
+            {
+                "status": {
+                    "code": "00",
+                    "message": "success",
+                    "totalCount": 1
+                },
+                "contents": {
+                    "subwayLine": "1호선",
+                    "stationName": "서울역",
+                    "stationCode": "133",
+                    "stat": [
+                        {
+                            "startStationCode": "100",
+                            "startStationName": "소요산역",
+                            "endStationCode": "141",
+                            "endStationName": "구로역",
+                            "prevStationCode": "132",
+                            "prevStationName": "시청역",
+                            "updnLine": 1,  # 0: 상행선/외선, 1: 하행선/내선
+                            "directAt": 0,  # 0: 일반열차, 1: 급행열차
+                            "data": [
+                                {
+                                    "dow": "MON",
+                                    "hh": "08",
+                                    "mm": "00",
+                                    "congestionTrain": 0  # 혼잡도 (단위: %)
+                                }
+                            ]
+                        }
+                    ],
+                    "statStartDate": "20220515",  # 통계 시작 일자 (YYYYMMDD)
+                    "statEndDate": "20220814"     # 통계 종료 일자 (YYYYMMDD)
+                }
+            }
+        """
+        url = f"{self.transit_url}/puzzle/subway/congestion/stat/train"
+        
+        params = {
+            "routeNm": route_nm,
+            "stationNm": station_nm
+        }
+        
+        # 선택적 파라미터 추가
+        if dow:
+            params["dow"] = dow
+        if hh:
+            params["hh"] = hh
+            
+        try:
+            response = requests.get(url, params=params, headers=self.headers)
+            
+            if response.status_code == 200:
+                return response.json()
+            else:
+                print(f"지하철 혼잡도 조회 실패: {response.status_code}")
+                print(f"응답 내용: {response.text}")
+                return None
+        except Exception as e:
+            print(f"에러 발생: {str(e)}")
+            return None
+    
+    def get_subway_car_congestion(self, 
+                                route_nm: str,
+                                station_nm: str,
+                                dow: Optional[str] = None,
+                                hh: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        """
+        지하철 진입 역 기준 칸별 혼잡도 조회 API
+        지정한 운행 시간대(05:30 ~ 23:50)에 특정 역으로 진입하는 일반/급행 열차에 대한 칸별 혼잡도 데이터를 10분 간격으로 제공
+
+        Args:
+            route_nm: 지하철 노선 명칭 (예: "1호선")
+            station_nm: 지하철 역 명칭 (예: "서울역")
+            dow: 검색 기준 요일 (MON, TUE, WED, THU, FRI, SAT, SUN)
+                미입력시 현재 요일 기준 데이터 반환
+            hh: 검색 기준 시간 (05~23)
+                미입력시 현재 시간대 기준 데이터 반환
+
+        Returns:
+            칸별 혼잡도 정보 또는 실패시 None
+            응답 예시:
+            {
+                "status": {
+                    "code": "00",
+                    "message": "success",
+                    "totalCount": 1
+                },
+                "contents": {
+                    "subwayLine": "1호선",
+                    "stationName": "서울역",
+                    "stationCode": "133",
+                    "stat": [
+                        {
+                            "startStationCode": "100",
+                            "startStationName": "소요산역",
+                            "endStationCode": "141",
+                            "endStationName": "구로역",
+                            "prevStationCode": "132",
+                            "prevStationName": "시청역",
+                            "updnLine": 1,  # 0: 상행선/외선, 1: 하행선/내선
+                            "directAt": 0,  # 0: 일반열차, 1: 급행열차
+                            "data": [
+                                {
+                                    "dow": "TUE",
+                                    "hh": "08",
+                                    "mm": "00",
+                                    "congestionCar": [  # 각 칸별 혼잡도 (단위: %)
+                                        63, 67, 71, 81, 80, 88, 85, 80, 91, 85
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "statStartDate": "20220516",  # 통계 시작 일자 (YYYYMMDD)
+                    "statEndDate": "20220815"     # 통계 종료 일자 (YYYYMMDD)
+                }
+            }
+        """
+        url = f"{self.transit_url}/puzzle/subway/congestion/stat/car"
+        
+        params = {
+            "routeNm": route_nm,
+            "stationNm": station_nm
+        }
+        
+        # 선택적 파라미터 추가
+        if dow:
+            params["dow"] = dow
+        if hh:
+            params["hh"] = hh
+            
+        try:
+            response = requests.get(url, params=params, headers=self.headers)
+            
+            if response.status_code == 200:
+                return response.json()
+            else:
+                print(f"지하철 칸별 혼잡도 조회 실패: {response.status_code}")
+                print(f"응답 내용: {response.text}")
+                return None
+        except Exception as e:
+            print(f"에러 발생: {str(e)}")
+            return None
+    
+    def get_subway_car_getoff_rate(self, 
+                                 route_nm: str,
+                                 station_nm: str,
+                                 dow: Optional[str] = None,
+                                 hh: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        """
+        지하철 진입 역 기준 칸별 하차 비율 조회 API
+        지정한 운행 시간대(05:30 ~ 23:50)에 특정 역으로 진입하는 일반/급행 열차에 대한 칸별 하차 비율 데이터를 10분 간격으로 제공
+
+        Args:
+            route_nm: 지하철 노선 명칭 (예: "1호선")
+            station_nm: 지하철 역 명칭 (예: "서울역")
+            dow: 검색 기준 요일 (MON, TUE, WED, THU, FRI, SAT, SUN)
+                미입력시 현재 요일 기준 데이터 반환
+            hh: 검색 기준 시간 (05~23)
+                미입력시 현재 시간대 기준 데이터 반환
+
+        Returns:
+            칸별 하차 비율 정보 또는 실패시 None
+            응답 예시:
+            {
+                "status": {
+                    "code": "00",
+                    "message": "success",
+                    "totalCount": 1
+                },
+                "contents": {
+                    "subwayLine": "1호선",
+                    "stationName": "서울역",
+                    "stationCode": "133",
+                    "stat": [
+                        {
+                            "startStationCode": "100",
+                            "startStationName": "소요산역",
+                            "endStationCode": "141",
+                            "endStationName": "구로역",
+                            "prevStationCode": "132",
+                            "prevStationName": "시청역",
+                            "updnLine": 1,  # 0: 상행선/외선, 1: 하행선/내선
+                            "directAt": 0,  # 0: 일반열차, 1: 급행열차
+                            "data": [
+                                {
+                                    "dow": "MON",
+                                    "hh": "08",
+                                    "mm": "00",
+                                    "getOffCarRate": [  # 각 칸별 하차 비율 (단위: %, 총합 100%)
+                                        13, 17, 9, 14, 6, 7, 6, 8, 7, 13
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "statStartDate": "20220516",  # 통계 시작 일자 (YYYYMMDD)
+                    "statEndDate": "20220815"     # 통계 종료 일자 (YYYYMMDD)
+                }
+            }
+        """
+        url = f"{self.transit_url}/puzzle/subway/congestion/stat/get-off"
+        
+        params = {
+            "routeNm": route_nm,
+            "stationNm": station_nm
+        }
+        
+        # 선택적 파라미터 추가
+        if dow:
+            params["dow"] = dow
+        if hh:
+            params["hh"] = hh
+            
+        try:
+            response = requests.get(url, params=params, headers=self.headers)
+            
+            if response.status_code == 200:
+                return response.json()
+            else:
+                print(f"지하철 칸별 하차 비율 조회 실패: {response.status_code}")
+                print(f"응답 내용: {response.text}")
+                return None
+        except Exception as e:
+            print(f"에러 발생: {str(e)}")
     
